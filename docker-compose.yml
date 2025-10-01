@@ -1,0 +1,32 @@
+# Specifies the version of the Docker Compose file format.
+version: '3.8'
+
+# Defines the services (containers) that make up our application.
+services:
+  # 1. The Redpanda message broker service.
+  redpanda:
+    # Use a pre-built image for Redpanda.
+    image: docker.redpanda.com/redpandadata/redpanda:v22.2.2
+    command:
+      - redpanda
+      - start
+      - --smp 1
+      - --overprovisioned
+      - --node-id 0
+      - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
+    ports:
+      # Maps the container's Kafka port 9092 to our local machine's port 9092.
+      - "9092:9092"
+      # Maps the admin port.
+      - "9644:9644"
+
+  # 2. Our custom gRPC inference service.
+  inference_service:
+    build:
+      # Tells Docker Compose to build the image from the Dockerfile in the current directory.
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # Maps the container's gRPC port 50051 to our local machine's port 50051.
+      - "50051:50051"
