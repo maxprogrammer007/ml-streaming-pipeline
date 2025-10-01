@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package inference;
+
+// The inference service definition.
+service InferenceService {
+  // A remote procedure call (RPC) named "Predict".
+  // It accepts an ImageRequest message and returns a PredictionResponse message.
+  rpc Predict(ImageRequest) returns (PredictionResponse);
+}
+
+// The request message format.
+message ImageRequest {
+  // It contains a single field: the image data, represented as raw bytes.
+  // The "1" is the field number, which is a unique ID.
+  bytes image_data = 1;
+}
+
+// The response message format.
+message PredictionResponse {
+  // It contains a single field: the predicted class label as a string.
+  string prediction = 1;
+}
