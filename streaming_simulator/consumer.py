@@ -2,12 +2,10 @@ import grpc
 import time
 from kafka import KafkaConsumer
 import numpy as np
-import sys
 
-# This line allows us to import the gRPC files from the other directory
-sys.path.append('..\\inference_service')
-import protos.inference_pb2 as inference_pb2
-import protos.inference_pb2_grpc as inference_pb2_grpc
+# Import the gRPC files that are now in the same directory
+import inference_pb2
+import inference_pb2_grpc
 
 
 KAFKA_TOPIC = "video-frames"
