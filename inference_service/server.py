@@ -10,7 +10,7 @@ import requests
 import json
 import os
 
-# We will generate these files in the next step
+# Import the generated gRPC files
 import protos.inference_pb2 as inference_pb2
 import protos.inference_pb2_grpc as inference_pb2_grpc
 
