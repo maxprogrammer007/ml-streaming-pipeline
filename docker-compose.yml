@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # Redpanda (Kafka-compatible streaming platform)
+  redpanda:
+    image: docker.redpanda.com/vectorized/redpanda:v23.3.3
+    container_name: redpanda
+    command:
+      - redpanda
+      - start
+      - --smp
+      - '1'
+      - --memory
+      - 1G
+      - --overprovisioned
+      - --node-id
+      - '0'
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    networks:
+      - ml-pipeline-network
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true' || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+  # Inference Service
+  inference-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: inference-service
+    ports:
+      - "50051:50051"
+    networks:
+      - ml-pipeline-network
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import grpc; channel = grpc.insecure_channel('localhost:50051'); grpc.channel_ready_future(channel).result(timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Producer (runs in a separate container)
+  producer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: producer
+    command: python /app/streaming_simulator/producer.py
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    networks:
+      - ml-pipeline-network
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=redpanda:29092
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./streaming_simulator:/app/streaming_simulator
+
+  # Consumer (runs in a separate container)
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: consumer
+    command: python /app/streaming_simulator/consumer.py
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      inference-service:
+        condition: service_healthy
+    networks:
+      - ml-pipeline-network
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=redpanda:29092
+      - GRPC_SERVER=inference-service:50051
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./streaming_simulator:/app/streaming_simulator
+
+networks:
+  ml-pipeline-network:
+    driver: bridge
