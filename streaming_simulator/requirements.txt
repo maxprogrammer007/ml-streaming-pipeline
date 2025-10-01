@@ -1,0 +1,5 @@
+kafka-python-ng
+opencv-python-headless
+grpcio
+grpcio-tools
+numpy
