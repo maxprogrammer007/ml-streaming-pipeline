@@ -4,7 +4,7 @@ from kafka import KafkaProducer
 
 KAFKA_TOPIC = "video-frames"
 KAFKA_BROKER = "localhost:9092"
-VIDEO_SOURCE = "sample_video.mp4" # Make sure this file exists in this directory
+VIDEO_SOURCE = "test_video.mp4" # Make sure this file exists in this directory
 
 def main():
     print("Starting producer...")
