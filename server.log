@@ -1,0 +1,17 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1760084337.939876    7556 add_port.cc:83] Failed to add port to server: No address added out of total 1 resolved for '[::]:50051'
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\abhin\OneDrive\Documents\GitHub\ml-streaming-pipeline\inference_service\server.py", line 102, in <module>
+    serve()
+  File "C:\Users\abhin\OneDrive\Documents\GitHub\ml-streaming-pipeline\inference_service\server.py", line 96, in serve
+    server.add_insecure_port(f"[::]:{port}")
+  File "C:\Users\abhin\AppData\Local\Programs\Python\Python312\Lib\site-packages\grpc\_server.py", line 1481, in add_insecure_port
+    return _common.validate_port_binding_result(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\abhin\AppData\Local\Programs\Python\Python312\Lib\site-packages\grpc\_common.py", line 181, in validate_port_binding_result
+    raise RuntimeError(_ERROR_MESSAGE_PORT_BINDING_FAILED % address)
+RuntimeError: Failed to bind to address [::]:50051; set GRPC_VERBOSITY=debug environment variable to see detailed error message.
+Loading ResNet18 model...
+Model and labels loaded successfully.
