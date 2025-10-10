@@ -11,9 +11,8 @@ import json
 import os
 
 # Import the generated gRPC files
-import protos.inference_pb2 as inference_pb2
-import protos.inference_pb2_grpc as inference_pb2_grpc
-
+from .protos import inference_pb2
+from .protos import inference_pb2_grpc
 # --- 1. Model & Label Loading ---
 
 # URL for ImageNet class labels
